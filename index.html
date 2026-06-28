@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>坦克世界闪击战 - 情谊代练服务中心</title>
+    <title>坦克世界闪击战 - 专业代练服务中心</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,365 +13,389 @@
         <div class="header-content">
             <div class="logo-icon">🎯</div>
             <h1 class="site-title">坦克世界闪击战</h1>
-            <p class="site-subtitle">情谊代练服务中心</p>
+            <p class="site-subtitle">专业代练服务中心</p>
             <div class="header-badge">安全 · 高效 · 靠谱</div>
         </div>
     </header>
 
-    <!-- 主容器 -->
-    <main class="container">
-        <!-- 选项一：代练项目 -->
-        <section class="section-card" id="section1">
-            <div class="section-header">
-                <span class="section-number">01</span>
-                <h2 class="section-title">选择代练项目</h2>
-                <span class="section-required">必选</span>
-            </div>
-            <div class="project-grid" id="projectGrid">
-                <label class="project-card" data-project="silver">
-                    <input type="radio" name="project" value="silver" checked>
-                    <div class="card-inner">
-                        <span class="card-icon">🪙</span>
-                        <span class="card-name">银币</span>
-                        <span class="card-desc">刷取游戏银币</span>
-                    </div>
-                </label>
-                <label class="project-card" data-project="exp">
-                    <input type="radio" name="project" value="exp">
-                    <div class="card-inner">
-                        <span class="card-icon">⭐</span>
-                        <span class="card-name">单车经验</span>
-                        <span class="card-desc">单辆坦克经验</span>
-                    </div>
-                </label>
-                <label class="project-card" data-project="winrate">
-                    <input type="radio" name="project" value="winrate">
-                    <div class="card-inner">
-                        <span class="card-icon">📈</span>
-                        <span class="card-name">胜率</span>
-                        <span class="card-desc">提升战斗胜率</span>
-                    </div>
-                </label>
-                <label class="project-card" data-project="average">
-                    <input type="radio" name="project" value="average">
-                    <div class="card-inner">
-                        <span class="card-icon">🎯</span>
-                        <span class="card-name">场均</span>
-                        <span class="card-desc">提升场均数据</span>
-                    </div>
-                </label>
-                <label class="project-card" data-project="mmedal">
-                    <input type="radio" name="project" value="mmedal">
-                    <div class="card-inner">
-                        <span class="card-icon">🏅</span>
-                        <span class="card-name">M章</span>
-                        <span class="card-desc">获取M级勋章</span>
-                    </div>
-                </label>
-                <label class="project-card" data-project="rings">
-                    <input type="radio" name="project" value="rings">
-                    <div class="card-inner">
-                        <span class="card-icon">💍</span>
-                        <span class="card-name">三环</span>
-                        <span class="card-desc">炮管环数提升</span>
-                    </div>
-                </label>
-                <label class="project-card" data-project="rating">
-                    <input type="radio" name="project" value="rating">
-                    <div class="card-inner">
-                        <span class="card-icon">🏆</span>
-                        <span class="card-name">评级</span>
-                        <span class="card-desc">账号评级提升</span>
-                    </div>
-                </label>
-            </div>
-        </section>
+    <!-- 板块切换Tab -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="tab-boost">⚡ 代练下单</button>
+        <button class="tab-btn" data-tab="tab-tools">🧮 独立工具</button>
+        <button class="tab-btn" data-tab="tab-news">📰 游戏新闻</button>
+    </nav>
 
-        <!-- 选项二：代练详情 -->
-        <section class="section-card" id="section2">
-            <div class="section-header">
-                <span class="section-number">02</span>
-                <h2 class="section-title">选择代练详情</h2>
-                <span class="section-required">必选</span>
-            </div>
-            <div class="detail-grid" id="detailGrid">
-                <label class="detail-card" data-detail="a">
-                    <input type="radio" name="detail" value="a" checked>
-                    <div class="detail-inner">
-                        <span class="detail-label">方案 A</span>
-                        <span class="detail-desc" id="detailDescA">有紫狗牌有高级银币/百万</span>
-                        <span class="detail-price" id="detailPriceA">¥9</span>
-                    </div>
-                    <div class="detail-check"></div>
-                </label>
-                <label class="detail-card" data-detail="b">
-                    <input type="radio" name="detail" value="b">
-                    <div class="detail-inner">
-                        <span class="detail-label">方案 B</span>
-                        <span class="detail-desc" id="detailDescB">无紫狗牌有高级银币/百万</span>
-                        <span class="detail-price" id="detailPriceB">¥13</span>
-                    </div>
-                    <div class="detail-check"></div>
-                </label>
-                <label class="detail-card" data-detail="c">
-                    <input type="radio" name="detail" value="c">
-                    <div class="detail-inner">
-                        <span class="detail-label">方案 C</span>
-                        <span class="detail-desc" id="detailDescC">无紫狗牌无高级银币/百万</span>
-                        <span class="detail-price" id="detailPriceC">¥15</span>
-                    </div>
-                    <div class="detail-check"></div>
-                </label>
-            </div>
-        </section>
+    <!-- ==================== 板块一：代练下单 ==================== -->
+    <main class="tab-content active" id="tab-boost">
+        <div class="container">
+            <!-- 选项一：代练项目 -->
+            <section class="section-card" id="section1">
+                <div class="section-header">
+                    <span class="section-number">01</span>
+                    <h2 class="section-title">选择代练项目</h2>
+                    <span class="section-required">必选</span>
+                </div>
+                <div class="project-grid" id="projectGrid">
+                    <label class="project-card" data-project="silver">
+                        <input type="radio" name="project" value="silver" checked>
+                        <div class="card-inner">
+                            <span class="card-icon">🪙</span>
+                            <span class="card-name">银币</span>
+                            <span class="card-desc">刷取游戏银币</span>
+                        </div>
+                    </label>
+                    <label class="project-card" data-project="exp">
+                        <input type="radio" name="project" value="exp">
+                        <div class="card-inner">
+                            <span class="card-icon">⭐</span>
+                            <span class="card-name">单车经验</span>
+                            <span class="card-desc">单辆坦克经验</span>
+                        </div>
+                    </label>
+                    <label class="project-card" data-project="winrate">
+                        <input type="radio" name="project" value="winrate">
+                        <div class="card-inner">
+                            <span class="card-icon">📈</span>
+                            <span class="card-name">胜率</span>
+                            <span class="card-desc">提升战斗胜率</span>
+                        </div>
+                    </label>
+                    <label class="project-card" data-project="average">
+                        <input type="radio" name="project" value="average">
+                        <div class="card-inner">
+                            <span class="card-icon">🎯</span>
+                            <span class="card-name">场均</span>
+                            <span class="card-desc">提升场均数据</span>
+                        </div>
+                    </label>
+                    <label class="project-card" data-project="mmedal">
+                        <input type="radio" name="project" value="mmedal">
+                        <div class="card-inner">
+                            <span class="card-icon">🏅</span>
+                            <span class="card-name">M章</span>
+                            <span class="card-desc">获取M级勋章</span>
+                        </div>
+                    </label>
+                    <label class="project-card" data-project="rings">
+                        <input type="radio" name="project" value="rings">
+                        <div class="card-inner">
+                            <span class="card-icon">💍</span>
+                            <span class="card-name">三环</span>
+                            <span class="card-desc">炮管环数提升</span>
+                        </div>
+                    </label>
+                    <label class="project-card" data-project="rating">
+                        <input type="radio" name="project" value="rating">
+                        <div class="card-inner">
+                            <span class="card-icon">🏆</span>
+                            <span class="card-name">评级</span>
+                            <span class="card-desc">账号评级提升</span>
+                        </div>
+                    </label>
+                </div>
+            </section>
 
-        <!-- 选项三：代练数量 -->
-        <section class="section-card" id="section3">
-            <div class="section-header">
-                <span class="section-number">03</span>
-                <h2 class="section-title">代练数量</h2>
-                <span class="section-hint">1-99</span>
-            </div>
-            <div class="quantity-wrapper">
-                <button type="button" class="qty-btn" id="qtyMinus" aria-label="减少数量">−</button>
-                <input type="number" class="quantity-input" id="quantityInput" value="1" min="1" max="99" step="1" inputmode="numeric">
-                <button type="button" class="qty-btn" id="qtyPlus" aria-label="增加数量">+</button>
-                <span class="quantity-unit" id="quantityUnit">份</span>
-            </div>
-            <p class="quantity-hint">请输入1到99之间的数量</p>
-        </section>
+            <!-- 选项二：代练详情 -->
+            <section class="section-card" id="section2">
+                <div class="section-header">
+                    <span class="section-number">02</span>
+                    <h2 class="section-title">选择代练详情</h2>
+                    <span class="section-required">必选</span>
+                </div>
+                <div class="detail-grid" id="detailGrid">
+                    <label class="detail-card" data-detail="a">
+                        <input type="radio" name="detail" value="a" checked>
+                        <div class="detail-inner">
+                            <span class="detail-label">方案 A</span>
+                            <span class="detail-desc" id="detailDescA">100万银币</span>
+                            <span class="detail-price" id="detailPriceA">¥50</span>
+                        </div>
+                        <div class="detail-check"></div>
+                    </label>
+                    <label class="detail-card" data-detail="b">
+                        <input type="radio" name="detail" value="b">
+                        <div class="detail-inner">
+                            <span class="detail-label">方案 B</span>
+                            <span class="detail-desc" id="detailDescB">500万银币</span>
+                            <span class="detail-price" id="detailPriceB">¥200</span>
+                        </div>
+                        <div class="detail-check"></div>
+                    </label>
+                    <label class="detail-card" data-detail="c">
+                        <input type="radio" name="detail" value="c">
+                        <div class="detail-inner">
+                            <span class="detail-label">方案 C</span>
+                            <span class="detail-desc" id="detailDescC">1000万银币</span>
+                            <span class="detail-price" id="detailPriceC">¥350</span>
+                        </div>
+                        <div class="detail-check"></div>
+                    </label>
+                </div>
+            </section>
 
-        <!-- 选项四：打手选择 -->
-        <section class="section-card" id="section4">
-            <div class="section-header">
-                <span class="section-number">04</span>
-                <h2 class="section-title">选择打手</h2>
-                <span class="section-hint">影响价格倍率</span>
-            </div>
-            <div class="player-grid" id="playerGrid">
-                <label class="player-card" data-player="jia">
-                    <input type="radio" name="player" value="jia">
-                    <div class="player-inner">
-                        <span class="player-name">情谊</span>
-                        <span class="player-title">金牌打手</span>
-                        <span class="player-rate">1.2x</span>
-                    </div>
-                </label>
-                <label class="player-card" data-player="yi">
-                    <input type="radio" name="player" value="yi">
-                    <div class="player-inner">
-                        <span class="player-name">大飞</span>
-                        <span class="player-title">金牌打手</span>
-                        <span class="player-rate">1.2x</span>
-                    </div>
-                </label>
-                <label class="player-card" data-player="bing">
-                    <input type="radio" name="player" value="bing">
-                    <div class="player-inner">
-                        <span class="player-name">Hansza</span>
-                        <span class="player-title">银牌打手</span>
-                        <span class="player-rate">1.1x</span>
-                    </div>
-                </label>
-                <label class="player-card player-default" data-player="ding">
-                    <input type="radio" name="player" value="ding" checked>
-                    <div class="player-inner">
-                        <span class="player-name">梅花糕</span>
-                        <span class="player-title">银牌打手</span>
-                        <span class="player-rate">1.1x</span>
-                    </div>
-                </label>
-                <label class="player-card" data-player="wu">
-                    <input type="radio" name="player" value="wu">
-                    <div class="player-inner">
-                        <span class="player-name">ZONK</span>
-                        <span class="player-title">银牌打手</span>
-                        <span class="player-rate">1.1x</span>
-                    </div>
-                </label>
-                <label class="player-card" data-player="ji">
-                    <input type="radio" name="player" value="ji">
-                    <div class="player-inner">
-                        <span class="player-name">菜鸡</span>
-                        <span class="player-title">银牌打手</span>
-                        <span class="player-rate">1.1x</span>
-                    </div>
-                </label>
-                <label class="player-card" data-player="geng">
-                    <input type="radio" name="player" value="geng">
-                    <div class="player-inner">
-                        <span class="player-name">子夜</span>
-                        <span class="player-title">银牌打手</span>
-                        <span class="player-rate">1.1x</span>
-                    </div>
-                </label>
-                <label class="player-card" data-player="xin">
-                    <input type="radio" name="player" value="xin">
-                    <div class="player-inner">
-                        <span class="player-name">土豆</span>
-                        <span class="player-title">铜牌打手</span>
-                        <span class="player-rate">1.0x</span>
-                    </div>
-                </label>
-                <label class="player-card" data-player="ren">
-                    <input type="radio" name="player" value="ren">
-                    <div class="player-inner">
-                        <span class="player-name">谷</span>
-                        <span class="player-title">铜牌打手</span>
-                        <span class="player-rate">1.0x</span>
-                    </div>
-                </label>
-                <label class="player-card" data-player="gui">
-                    <input type="radio" name="player" value="gui">
-                    <div class="player-inner">
-                        <span class="player-name">小黑子</span>
-                        <span class="player-title">当日特价打手</span>
-                        <span class="player-rate">0.9x</span>
-                    </div>
-                </label>
-            </div>
-        </section>
+            <!-- 选项三：代练数量 -->
+            <section class="section-card" id="section3">
+                <div class="section-header">
+                    <span class="section-number">03</span>
+                    <h2 class="section-title">代练数量</h2>
+                    <span class="section-hint">1-99</span>
+                </div>
+                <div class="quantity-wrapper">
+                    <button type="button" class="qty-btn" id="qtyMinus" aria-label="减少数量">−</button>
+                    <input type="number" class="quantity-input" id="quantityInput" value="1" min="1" max="99" step="1" inputmode="numeric">
+                    <button type="button" class="qty-btn" id="qtyPlus" aria-label="增加数量">+</button>
+                    <span class="quantity-unit">份</span>
+                </div>
+                <p class="quantity-hint">请输入1到99之间的数量</p>
+            </section>
 
-        <!-- 加急选项 & 价格展示 -->
-        <section class="section-card price-section" id="sectionPrice">
-            <div class="section-header">
-                <span class="section-number">⚡</span>
-                <h2 class="section-title">加急服务</h2>
-            </div>
-            <label class="urgent-toggle" id="urgentToggle">
-                <input type="checkbox" id="urgentCheckbox">
-                <span class="toggle-track">
-                    <span class="toggle-thumb"></span>
-                </span>
-                <span class="toggle-label">开启加急服务</span>
-                <span class="toggle-badge">+10%</span>
-            </label>
-            <p class="urgent-hint">加急服务将在总价基础上额外增加10%费用，优先安排打手</p>
+            <!-- 选项四：打手选择 -->
+            <section class="section-card" id="section4">
+                <div class="section-header">
+                    <span class="section-number">04</span>
+                    <h2 class="section-title">选择打手</h2>
+                    <span class="section-hint">影响价格倍率</span>
+                </div>
+                <div class="player-grid" id="playerGrid">
+                    <label class="player-card" data-player="jia">
+                        <input type="radio" name="player" value="jia">
+                        <div class="player-inner">
+                            <span class="player-name">甲</span>
+                            <span class="player-title">王牌打手</span>
+                            <span class="player-rate">1.5x</span>
+                        </div>
+                    </label>
+                    <label class="player-card" data-player="yi">
+                        <input type="radio" name="player" value="yi">
+                        <div class="player-inner">
+                            <span class="player-name">乙</span>
+                            <span class="player-title">资深打手</span>
+                            <span class="player-rate">1.3x</span>
+                        </div>
+                    </label>
+                    <label class="player-card" data-player="bing">
+                        <input type="radio" name="player" value="bing">
+                        <div class="player-inner">
+                            <span class="player-name">丙</span>
+                            <span class="player-title">高级打手</span>
+                            <span class="player-rate">1.1x</span>
+                        </div>
+                    </label>
+                    <label class="player-card player-default" data-player="ding">
+                        <input type="radio" name="player" value="ding" checked>
+                        <div class="player-inner">
+                            <span class="player-name">丁</span>
+                            <span class="player-title">中级打手</span>
+                            <span class="player-rate">1.0x</span>
+                        </div>
+                    </label>
+                    <label class="player-card" data-player="wu">
+                        <input type="radio" name="player" value="wu">
+                        <div class="player-inner">
+                            <span class="player-name">戊</span>
+                            <span class="player-title">标准打手</span>
+                            <span class="player-rate">0.9x</span>
+                        </div>
+                    </label>
+                    <label class="player-card" data-player="ji">
+                        <input type="radio" name="player" value="ji">
+                        <div class="player-inner">
+                            <span class="player-name">己</span>
+                            <span class="player-title">初级打手</span>
+                            <span class="player-rate">0.8x</span>
+                        </div>
+                    </label>
+                    <label class="player-card" data-player="geng">
+                        <input type="radio" name="player" value="geng">
+                        <div class="player-inner">
+                            <span class="player-name">庚</span>
+                            <span class="player-title">实习打手</span>
+                            <span class="player-rate">0.7x</span>
+                        </div>
+                    </label>
+                    <label class="player-card" data-player="xin">
+                        <input type="radio" name="player" value="xin">
+                        <div class="player-inner">
+                            <span class="player-name">辛</span>
+                            <span class="player-title">新秀打手</span>
+                            <span class="player-rate">0.65x</span>
+                        </div>
+                    </label>
+                    <label class="player-card" data-player="ren">
+                        <input type="radio" name="player" value="ren">
+                        <div class="player-inner">
+                            <span class="player-name">壬</span>
+                            <span class="player-title">优惠打手</span>
+                            <span class="player-rate">0.6x</span>
+                        </div>
+                    </label>
+                    <label class="player-card" data-player="gui">
+                        <input type="radio" name="player" value="gui">
+                        <div class="player-inner">
+                            <span class="player-name">癸</span>
+                            <span class="player-title">特价打手</span>
+                            <span class="player-rate">0.5x</span>
+                        </div>
+                    </label>
+                </div>
+            </section>
 
-            <!-- 价格展示区 -->
-            <div class="price-display" id="priceDisplay">
-                <div class="price-breakdown">
-                    <div class="price-row">
-                        <span class="price-label">基础单价</span>
-                        <span class="price-value" id="basePriceDisplay">¥50.00</span>
-                    </div>
-                    <div class="price-row">
-                        <span class="price-label">数量倍率</span>
-                        <span class="price-value" id="qtyMultiplierDisplay">×1</span>
-                    </div>
-                    <div class="price-row">
-                        <span class="price-label">打手倍率</span>
-                        <span class="price-value" id="playerMultiplierDisplay">×1.0</span>
-                    </div>
-                    <div class="price-row" id="urgentRow" style="display:none;">
-                        <span class="price-label">加急费用</span>
-                        <span class="price-value urgent-value">×1.1</span>
-                    </div>
-                    <div class="price-divider"></div>
-                    <div class="price-row price-total-row">
-                        <span class="price-label">总价格</span>
-                        <span class="price-total" id="totalPriceDisplay">¥50.00</span>
-                    </div>
+            <!-- 加急选项 & 价格展示 -->
+            <section class="section-card price-section" id="sectionPrice">
+                <div class="section-header">
+                    <span class="section-number">⚡</span>
+                    <h2 class="section-title">加急服务</h2>
                 </div>
-            </div>
+                <label class="urgent-toggle" id="urgentToggle">
+                    <input type="checkbox" id="urgentCheckbox">
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                    <span class="toggle-label">开启加急服务</span>
+                    <span class="toggle-badge">+10%</span>
+                </label>
+                <p class="urgent-hint">加急服务将在总价基础上额外增加10%费用，优先安排打手</p>
 
-            <!-- 一键复制按钮 -->
-            <button type="button" class="copy-btn" id="copyBtn">
-                <span class="copy-icon">📋</span>
-                <span class="copy-text">一键复制订单</span>
-                <span class="copy-feedback" id="copyFeedback">✅ 已复制！</span>
-            </button>
-            <p class="copy-hint">复制后可直接发送给客服，快速下单</p>
-        </section>
-        <section class="section-card calculator-section" id="sectionCalculator">
-            <div class="section-header">
-                <span class="section-number">🧮</span>
-                <h2 class="section-title">自助场均/胜率计算器</h2>
-                <span class="section-hint">独立工具</span>
-            </div>
-            <div class="calculator-type">
-                <span class="calc-type-label">计算类型：</span>
-                <label class="calc-type-option">
-                    <input type="radio" name="calcType" value="winrate" checked>
-                    <span class="calc-type-btn">📈 胜率</span>
-                </label>
-                <label class="calc-type-option">
-                    <input type="radio" name="calcType" value="average">
-                    <span class="calc-type-btn">🎯 场均伤害</span>
-                </label>
-            </div>
-            <div class="calculator-inputs" id="calcInputs">
-                <div class="calc-row">
-                    <label class="calc-label" for="currentValue">当前<span id="calcLabelUnit">胜率</span> (%)</label>
-                    <input type="number" class="calc-input" id="currentValue" placeholder="例如 55" step="0.01" min="0" max="100">
-                </div>
-                <div class="calc-row">
-                    <label class="calc-label" for="currentBattles">当前场次</label>
-                    <input type="number" class="calc-input" id="currentBattles" placeholder="例如 5000" step="1" min="1">
-                </div>
-                <div class="calc-row">
-                    <label class="calc-label" for="targetValue">目标<span id="calcTargetLabel">胜率</span> (%)</label>
-                    <input type="number" class="calc-input" id="targetValue" placeholder="例如 60" step="0.01" min="0" max="100">
-                </div>
-                <div class="calc-row">
-                    <label class="calc-label" for="expectedValue">预期每场<span id="calcExpectedLabel">胜率</span> (%)</label>
-                    <input type="number" class="calc-input" id="expectedValue" placeholder="例如 70" step="0.01" min="0" max="100">
-                </div>
-            </div>
-            <button type="button" class="calc-btn" id="calcBtn">🔍 计算所需场次</button>
-            <div class="calc-result" id="calcResult" style="display: none;">
-                <div class="result-text" id="resultText"></div>
-                <div class="result-detail" id="resultDetail"></div>
-            </div>
-        </section>
-        <!-- 客服联系方式 -->
-        <section class="section-card contact-section" id="sectionContact">
-            <div class="section-header">
-                <span class="section-number">💬</span>
-                <h2 class="section-title">联系客服</h2>
-            </div>
-            <div class="contact-grid">
-                <div class="contact-item">
-                    <span class="contact-icon">💚</span>
-                    <div class="contact-info">
-                        <span class="contact-label">微信客服</span>
-                        <span class="contact-value">19825380211</span>
-                    </div>
-                    <button class="contact-copy-btn" data-copy="19825380211" title="复制微信号">
-                        📋 复制
-                    </button>
-                </div>
-                <div class="contact-item">
-                    <span class="contact-icon">🐧</span>
-                    <div class="contact-info">
-                        <span class="contact-label">QQ客服</span>
-                        <span class="contact-value">3139045106</span>
-                    </div>
-                    <button class="contact-copy-btn" data-copy="3139045106" title="复制QQ号">
-                        📋 复制
-                    </button>
-                </div>
-                <div class="contact-item">
-                    <span class="contact-icon">🕐</span>
-                    <div class="contact-info">
-                        <span class="contact-label">工作时间</span>
-                        <span class="contact-value">每日 10:00 - 02:00</span>
+                <div class="price-display" id="priceDisplay">
+                    <div class="price-breakdown">
+                        <div class="price-row">
+                            <span class="price-label">基础单价</span>
+                            <span class="price-value" id="basePriceDisplay">¥50.00</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price-label">数量倍率</span>
+                            <span class="price-value" id="qtyMultiplierDisplay">×1</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price-label">打手倍率</span>
+                            <span class="price-value" id="playerMultiplierDisplay">×1.0</span>
+                        </div>
+                        <div class="price-row" id="urgentRow" style="display:none;">
+                            <span class="price-label">加急费用</span>
+                            <span class="price-value urgent-value">×1.1</span>
+                        </div>
+                        <div class="price-divider"></div>
+                        <div class="price-row price-total-row">
+                            <span class="price-label">总价格</span>
+                            <span class="price-total" id="totalPriceDisplay">¥50.00</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <p class="contact-note">💡 下单后请主动联系客服，发送复制的订单信息，客服将尽快为您安排打手。</p>
-        </section>
+
+                <button type="button" class="copy-btn" id="copyBtn">
+                    <span class="copy-icon">📋</span>
+                    <span class="copy-text">一键复制订单</span>
+                    <span class="copy-feedback" id="copyFeedback">✅ 已复制！</span>
+                </button>
+                <p class="copy-hint">复制后可直接发送给客服，快速下单</p>
+            </section>
+
+            <!-- 客服联系方式 -->
+            <section class="section-card contact-section" id="sectionContact">
+                <div class="section-header">
+                    <span class="section-number">💬</span>
+                    <h2 class="section-title">联系客服</h2>
+                </div>
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <span class="contact-icon">💚</span>
+                        <div class="contact-info">
+                            <span class="contact-label">微信客服</span>
+                            <span class="contact-value">WOT-Blitz-DL001</span>
+                        </div>
+                        <button class="contact-copy-btn" data-copy="WOT-Blitz-DL001">📋 复制</button>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">🐧</span>
+                        <div class="contact-info">
+                            <span class="contact-label">QQ客服</span>
+                            <span class="contact-value">1234567890</span>
+                        </div>
+                        <button class="contact-copy-btn" data-copy="1234567890">📋 复制</button>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">🕐</span>
+                        <div class="contact-info">
+                            <span class="contact-label">工作时间</span>
+                            <span class="contact-value">每日 09:00 - 02:00</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="contact-note">💡 下单后请主动联系客服，发送复制的订单信息，客服将尽快为您安排打手。</p>
+            </section>
+        </div>
+    </main>
+
+    <!-- ==================== 板块二：独立工具 ==================== -->
+    <main class="tab-content" id="tab-tools">
+        <div class="container">
+            <section class="section-card calculator-section">
+                <div class="section-header">
+                    <span class="section-number">🧮</span>
+                    <h2 class="section-title">自助场均/胜率计算器</h2>
+                </div>
+                <div class="calculator-type">
+                    <span class="calc-type-label">计算类型：</span>
+                    <label class="calc-type-option">
+                        <input type="radio" name="calcType" value="winrate" checked>
+                        <span class="calc-type-btn">📈 胜率</span>
+                    </label>
+                    <label class="calc-type-option">
+                        <input type="radio" name="calcType" value="average">
+                        <span class="calc-type-btn">🎯 场均伤害</span>
+                    </label>
+                </div>
+                <div class="calculator-inputs" id="calcInputs">
+                    <div class="calc-row">
+                        <label class="calc-label" for="currentValue">当前<span id="calcLabelUnit">胜率</span> (%)</label>
+                        <input type="number" class="calc-input" id="currentValue" placeholder="例如 55" step="0.01" min="0" max="100">
+                    </div>
+                    <div class="calc-row">
+                        <label class="calc-label" for="currentBattles">当前场次</label>
+                        <input type="number" class="calc-input" id="currentBattles" placeholder="例如 5000" step="1" min="1">
+                    </div>
+                    <div class="calc-row">
+                        <label class="calc-label" for="targetValue">目标<span id="calcTargetLabel">胜率</span> (%)</label>
+                        <input type="number" class="calc-input" id="targetValue" placeholder="例如 60" step="0.01" min="0" max="100">
+                    </div>
+                    <div class="calc-row">
+                        <label class="calc-label" for="expectedValue">预期每场<span id="calcExpectedLabel">胜率</span> (%)</label>
+                        <input type="number" class="calc-input" id="expectedValue" placeholder="例如 70" step="0.01" min="0" max="100">
+                    </div>
+                </div>
+                <button type="button" class="calc-btn" id="calcBtn">🔍 计算所需场次</button>
+                <div class="calc-result" id="calcResult" style="display: none;">
+                    <div class="result-text" id="resultText"></div>
+                    <div class="result-detail" id="resultDetail"></div>
+                </div>
+            </section>
+            <p class="tool-hint">该工具独立计算，不影响代练板块的价格。</p>
+        </div>
+    </main>
+
+    <!-- ==================== 板块三：游戏新闻 ==================== -->
+    <main class="tab-content" id="tab-news">
+        <div class="container">
+            <section class="section-card news-section">
+                <div class="section-header">
+                    <span class="section-number">📰</span>
+                    <h2 class="section-title">最新游戏公告与新闻</h2>
+                </div>
+                <div id="newsContainer" class="news-list">
+                    <!-- 动态加载公告 -->
+                </div>
+            </section>
+            <p class="news-hint">公告内容由服务器实时更新。</p>
+        </div>
     </main>
 
     <!-- 页脚 -->
     <footer class="footer">
-        <p>© 2026 坦克世界闪击战情谊代练中心 | 安全代练 · 诚信经营 · 售后保障</p>
+        <p>© 2026 坦克世界闪击战代练服务中心 | 安全代练 · 诚信经营 · 售后保障</p>
         <p class="footer-disclaimer">本站仅为代练信息展示平台，游戏版权归Wargaming所有</p>
     </footer>
 
-    <!-- Toast 提示 -->
     <div class="toast" id="toast"></div>
-
     <script src="script.js" defer></script>
 </body>
 </html>
