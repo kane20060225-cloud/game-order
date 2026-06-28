@@ -1,19 +1,46 @@
-// ==================== 价格配置 ====================
-const projectDetails = {
-    silver: { name: '银币', a: { desc: '100万银币', price: 50 }, b: { desc: '500万银币', price: 200 }, c: { desc: '1000万银币', price: 350 } },
-    exp: { name: '单车经验', a: { desc: '1万经验', price: 60 }, b: { desc: '5万经验', price: 260 }, c: { desc: '10万经验', price: 480 } },
-    winrate: { name: '胜率', a: { desc: '提升1%', price: 80 }, b: { desc: '提升3%', price: 220 }, c: { desc: '提升5%', price: 350 } },
-    average: { name: '场均', a: { desc: '场均提升100', price: 70 }, b: { desc: '场均提升300', price: 190 }, c: { desc: '场均提升500', price: 300 } },
-    mmedal: { name: 'M章', a: { desc: '1个M章', price: 90 }, b: { desc: '3个M章', price: 240 }, c: { desc: '5个M章', price: 380 } },
-    rings: { name: '三环', a: { desc: '一环', price: 100 }, b: { desc: '二环', price: 280 }, c: { desc: '三环', price: 500 } },
-    rating: { name: '评级', a: { desc: '提升1级', price: 120 }, b: { desc: '提升2级', price: 300 }, c: { desc: '提升3级', price: 520 } }
-};
-const playerRates = { jia: 1.5, yi: 1.3, bing: 1.1, ding: 1.0, wu: 0.9, ji: 0.8, geng: 0.7, xin: 0.65, ren: 0.6, gui: 0.5 };
+// ==================== 工具函数 ====================
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+}
 
-// ==================== DOM 元素 ====================
+// ==================== 配置 ====================
+const API_BASE = 'http://localhost:3000/api';
+
+const projectDetails = {
+    silver: { name:'银币', a:{desc:'有紫狗牌有高级银币',price:8.8}, b:{desc:'无紫狗牌有高级银币',price:12.8}, c:{desc:'无紫狗牌无高级银币',price:14.8} },
+    exp: { name:'单车经验', a:{desc:'有紫狗牌有高级经验',price:3.8}, b:{desc:'无紫狗牌有高级经验',price:5.8}, c:{desc:'无紫狗牌无高级经验',price:6.8} },
+    winrate: { name:'胜率', a:{desc:'70%胜率/10场',price:19.8}, b:{desc:'75%胜率/10场',price:24.8}, c:{desc:'80%胜率/10场',price:34.8} },
+    average: { name:'场均', a:{desc:'3000场均/10场',price:19.8}, b:{desc:'3300场均/10场',price:28.8}, c:{desc:'3500场均/10场',price:37.8} },
+    mmedal: { name:'M章', a:{desc:'1个M章',price:29.8}, b:{desc:'3个M章',price:57.8}, c:{desc:'5个M章',price:138.8} },
+    rings: { name:'三环', a:{desc:'一环',price:68.8}, b:{desc:'二环',price:158.8}, c:{desc:'三环',price:248.8} },
+    rating: { name:'评级', a:{desc:'3千到4千/百分',price:11.8}, b:{desc:'4千到5千/百分',price:14.8}, c:{desc:'5千到6千/百分',price:29.8} }
+};
+
+const playerData = [
+    { key:'jia', name:'情谊', title:'金牌打手', rate:1.2 },
+    { key:'yi', name:'大飞', title:'金牌打手', rate:1.2 },
+    { key:'bing', name:'Hansza', title:'银牌打手', rate:1.1 },
+    { key:'ding', name:'梅花糕', title:'银牌打手', rate:1.1 },
+    { key:'wu', name:'日日', title:'银牌打手', rate:1.1 },
+    { key:'ji', name:'子夜', title:'银牌打手', rate:1.1 },
+    { key:'geng', name:'灵月', title:'银牌打手', rate:1.1 },
+    { key:'xin', name:'土豆', title:'铜牌打手', rate:1.0 },
+    { key:'ren', name:'谷', title:'铜牌打手', rate:1.0 },
+    { key:'gui', name:'小黑子', title:'特惠打手', rate:0.9 }
+];
+
+// ==================== DOM元素引用 ====================
 // 板块切换
-const tabBtns = document.querySelectorAll('.tab-btn');
-const tabContents = document.querySelectorAll('.tab-content');
+const mainMenu = document.getElementById('mainMenu');
+const sections = {
+    boost: document.getElementById('sectionBoost'),
+    tools: document.getElementById('sectionTools'),
+    news: document.getElementById('sectionNews')
+};
 
 // 代练相关
 const projectRadios = document.querySelectorAll('input[name="project"]');
@@ -24,48 +51,88 @@ const detailDescC = document.getElementById('detailDescC');
 const detailPriceA = document.getElementById('detailPriceA');
 const detailPriceB = document.getElementById('detailPriceB');
 const detailPriceC = document.getElementById('detailPriceC');
-const quantityInput = document.getElementById('quantityInput');
-const qtyMinusBtn = document.getElementById('qtyMinus');
-const qtyPlusBtn = document.getElementById('qtyPlus');
-const playerRadios = document.querySelectorAll('input[name="player"]');
-const urgentCheckbox = document.getElementById('urgentCheckbox');
+const qtyInput = document.getElementById('quantityInput');
+const qtyMinus = document.getElementById('qtyMinus');
+const qtyPlus = document.getElementById('qtyPlus');
+const urgentCheck = document.getElementById('urgentCheckbox');
 const urgentRow = document.getElementById('urgentRow');
 const basePriceDisplay = document.getElementById('basePriceDisplay');
-const qtyMultiplierDisplay = document.getElementById('qtyMultiplierDisplay');
-const playerMultiplierDisplay = document.getElementById('playerMultiplierDisplay');
+const qtyMultDisplay = document.getElementById('qtyMultiplierDisplay');
+const playerMultDisplay = document.getElementById('playerMultiplierDisplay');
 const totalPriceDisplay = document.getElementById('totalPriceDisplay');
 const copyBtn = document.getElementById('copyBtn');
 const copyFeedback = document.getElementById('copyFeedback');
-const contactCopyBtns = document.querySelectorAll('.contact-copy-btn');
-const toast = document.getElementById('toast');
 
-// 计算器相关
+// 计算器
 const calcTypeRadios = document.querySelectorAll('input[name="calcType"]');
-const calcLabelUnit = document.getElementById('calcLabelUnit');
-const calcTargetLabel = document.getElementById('calcTargetLabel');
-const calcExpectedLabel = document.getElementById('calcExpectedLabel');
-const currentValueInput = document.getElementById('currentValue');
-const currentBattlesInput = document.getElementById('currentBattles');
-const targetValueInput = document.getElementById('targetValue');
-const expectedValueInput = document.getElementById('expectedValue');
-const calcBtn = document.getElementById('calcBtn');
+const calcUnit = document.getElementById('calcLabelUnit');
+const calcTargetL = document.getElementById('calcTargetLabel');
+const calcExpL = document.getElementById('calcExpectedLabel');
 const calcResult = document.getElementById('calcResult');
-const resultText = document.getElementById('resultText');
-const resultDetail = document.getElementById('resultDetail');
 
-// 新闻容器
-const newsContainer = document.getElementById('newsContainer');
+// 用户相关
+const openRegisterBtn = document.getElementById('openRegisterBtn');
+const openLoginBtn = document.getElementById('openLoginBtn');
+const registerModal = document.getElementById('registerModal');
+const closeRegisterBtn = document.getElementById('closeRegisterBtn');
+const registerForm = document.getElementById('registerForm');
+const regError = document.getElementById('regError');
+const toLoginLink = document.getElementById('toLoginLink');
 
-// ==================== 板块切换逻辑 ====================
-tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const targetTab = btn.getAttribute('data-tab');
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        tabContents.forEach(tc => tc.classList.remove('active'));
-        document.getElementById(targetTab).classList.add('active');
+const loginModal = document.getElementById('loginModal');
+const closeLoginBtn = document.getElementById('closeLoginBtn');
+const loginForm = document.getElementById('loginForm');
+const loginError = document.getElementById('loginError');
+const toRegisterLink = document.getElementById('toRegisterLink');
+
+const userMenu = document.getElementById('userMenu');
+const userMenuBtn = document.getElementById('userMenuBtn');
+const userDropdown = document.getElementById('userDropdown');
+const displayUsername = document.getElementById('displayUsername');
+const logoutBtn = document.getElementById('logoutBtn');
+
+// ==================== 初始化 ====================
+function init() {
+    updateDetailCards();
+    refreshPrice();
+    generatePlayers();
+    checkLoginStatus();
+}
+
+// ==================== 板块切换 ====================
+document.querySelectorAll('.menu-card').forEach(card => {
+    card.addEventListener('click', () => {
+        const target = card.dataset.target;
+        mainMenu.style.display = 'none';
+        Object.values(sections).forEach(sec => sec.style.display = 'none');
+        sections[target].style.display = 'block';
     });
 });
+
+document.querySelectorAll('.back-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        Object.values(sections).forEach(sec => sec.style.display = 'none');
+        mainMenu.style.display = 'flex';
+    });
+});
+
+// ==================== 打手列表生成 ====================
+function generatePlayers() {
+    const grid = document.getElementById('playerGrid');
+    playerData.forEach((p, idx) => {
+        const label = document.createElement('label');
+        label.className = 'player-card';
+        label.innerHTML = `
+            <input type="radio" name="player" value="${p.key}" ${idx===3?'checked':''}>
+            <div class="player-inner">
+                <span class="player-name">${p.name}</span>
+                <span class="player-title">${p.title}</span>
+                <span class="player-rate">${p.rate}x</span>
+            </div>
+        `;
+        grid.appendChild(label);
+    });
+}
 
 // ==================== 代练价格计算 ====================
 function getSelectedProject() {
@@ -76,167 +143,257 @@ function getSelectedDetail() {
     const checked = document.querySelector('input[name="detail"]:checked');
     return checked ? checked.value : 'a';
 }
-function getBasePrice() {
-    const project = getSelectedProject();
-    const detail = getSelectedDetail();
-    return projectDetails[project]?.[detail]?.price || 0;
-}
-function getQuantity() {
-    let qty = parseInt(quantityInput.value, 10);
+function getQty() {
+    let qty = parseInt(qtyInput.value, 10);
     if (isNaN(qty) || qty < 1) qty = 1;
     if (qty > 99) qty = 99;
     return qty;
 }
 function getPlayerRate() {
     const checked = document.querySelector('input[name="player"]:checked');
-    return playerRates[checked?.value] || 1.0;
+    if (!checked) return 1.0;
+    const found = playerData.find(p => p.key === checked.value);
+    return found ? found.rate : 1.0;
 }
-function isUrgent() { return urgentCheckbox.checked; }
-function calculateTotal() {
-    return getBasePrice() * getQuantity() * getPlayerRate() * (isUrgent() ? 1.1 : 1);
-}
+function isUrgent() { return urgentCheck.checked; }
 
 function updateDetailCards() {
-    const project = getSelectedProject();
-    const details = projectDetails[project];
-    if (!details) return;
-    detailDescA.textContent = details.a.desc;
-    detailDescB.textContent = details.b.desc;
-    detailDescC.textContent = details.c.desc;
-    detailPriceA.textContent = `¥${details.a.price}`;
-    detailPriceB.textContent = `¥${details.b.price}`;
-    detailPriceC.textContent = `¥${details.c.price}`;
+    const p = projectDetails[getSelectedProject()];
+    detailDescA.textContent = p.a.desc;
+    detailDescB.textContent = p.b.desc;
+    detailDescC.textContent = p.c.desc;
+    detailPriceA.textContent = `¥${p.a.price}`;
+    detailPriceB.textContent = `¥${p.b.price}`;
+    detailPriceC.textContent = `¥${p.c.price}`;
+}
+
+function calcTotal() {
+    const base = projectDetails[getSelectedProject()][getSelectedDetail()].price;
+    return base * getQty() * getPlayerRate() * (isUrgent() ? 1.1 : 1);
 }
 
 function refreshPrice() {
-    const total = calculateTotal();
-    basePriceDisplay.textContent = `¥${getBasePrice().toFixed(2)}`;
-    qtyMultiplierDisplay.textContent = `×${getQuantity()}`;
-    playerMultiplierDisplay.textContent = `×${getPlayerRate().toFixed(2)}`;
-    totalPriceDisplay.textContent = `¥${total.toFixed(2)}`;
+    const base = projectDetails[getSelectedProject()][getSelectedDetail()].price;
+    basePriceDisplay.textContent = `¥${base.toFixed(2)}`;
+    qtyMultDisplay.textContent = `×${getQty()}`;
+    playerMultDisplay.textContent = `×${getPlayerRate().toFixed(2)}`;
+    totalPriceDisplay.textContent = `¥${calcTotal().toFixed(2)}`;
     urgentRow.style.display = isUrgent() ? 'flex' : 'none';
 }
 
+// 监听变化
 projectRadios.forEach(r => r.addEventListener('change', () => { updateDetailCards(); refreshPrice(); }));
 detailRadios.forEach(r => r.addEventListener('change', refreshPrice));
-qtyMinusBtn.addEventListener('click', () => { let q = getQuantity(); if (q > 1) { quantityInput.value = q - 1; refreshPrice(); } });
-qtyPlusBtn.addEventListener('click', () => { let q = getQuantity(); if (q < 99) { quantityInput.value = q + 1; refreshPrice(); } });
-quantityInput.addEventListener('input', () => {
-    let v = parseInt(quantityInput.value, 10);
-    if (!isNaN(v)) { if (v < 1) quantityInput.value = 1; if (v > 99) quantityInput.value = 99; }
-    refreshPrice();
+qtyMinus.addEventListener('click', () => {
+    if (getQty() > 1) { qtyInput.value = getQty() - 1; refreshPrice(); }
 });
-quantityInput.addEventListener('blur', () => {
-    let v = parseInt(quantityInput.value, 10);
-    if (isNaN(v) || v < 1) quantityInput.value = 1;
-    else if (v > 99) quantityInput.value = 99;
-    refreshPrice();
+qtyPlus.addEventListener('click', () => {
+    if (getQty() < 99) { qtyInput.value = getQty() + 1; refreshPrice(); }
 });
-playerRadios.forEach(r => r.addEventListener('change', refreshPrice));
-urgentCheckbox.addEventListener('change', refreshPrice);
+qtyInput.addEventListener('input', () => { qtyInput.value = getQty(); refreshPrice(); });
+urgentCheck.addEventListener('change', refreshPrice);
+document.addEventListener('change', e => { if (e.target.name === 'player') refreshPrice(); });
 
+// 复制订单
 copyBtn.addEventListener('click', async () => {
-    const orderText = `【坦克世界闪击战代练订单】
-🎯 项目：${projectDetails[getSelectedProject()].name}
-📋 详情：方案${getSelectedDetail().toUpperCase()} - ${projectDetails[getSelectedProject()][getSelectedDetail()].desc}
-🔢 数量：${getQuantity()}
-👤 打手：${document.querySelector('input[name="player"]:checked')?.value || '未选'} (${getPlayerRate().toFixed(2)}x)
-⚡ 加急：${isUrgent() ? '是' : '否'}
-💰 总价：¥${calculateTotal().toFixed(2)}
-📅 时间：${new Date().toLocaleString()}`;
+    const p = projectDetails[getSelectedProject()];
+    const detailKey = getSelectedDetail();
+    const playerChecked = document.querySelector('input[name="player"]:checked');
+    const playerInfo = playerData.find(pd => pd.key === playerChecked?.value) || { name:'未知', rate:getPlayerRate() };
+        const remark = document.getElementById('remarkInput')?.value.trim() || '';
+    const remarkLine = remark ? `\n📝 备注：${remark}` : '';
+
+    const order = `【坦克世界闪击战代练订单】
+🎯 项目：${p.name}
+📋 详情：方案${detailKey.toUpperCase()} - ${p[detailKey].desc}
+🔢 数量：${getQty()}
+👤 打手：${playerInfo.name} (${playerInfo.rate}x)
+⚡ 加急：${isUrgent()?'是':'否'}
+💰 总价：¥${calcTotal().toFixed(2)}
+📅 下单时间：${new Date().toLocaleString()}${remarkLine}
+---
+如需帮助请联系客服`;
     try {
-        await navigator.clipboard.writeText(orderText);
+        await navigator.clipboard.writeText(order);
         copyFeedback.classList.add('show');
-        setTimeout(() => copyFeedback.classList.remove('show'), 1500);
+        setTimeout(() => copyFeedback.classList.remove('show'), 1800);
         showToast('✅ 订单已复制');
-    } catch (e) { showToast('❌ 复制失败'); }
+    } catch (err) {
+        showToast('❌ 复制失败，请手动复制');
+    }
 });
 
-contactCopyBtns.forEach(btn => {
+// 客服复制按钮
+document.querySelectorAll('.contact-copy-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
-        const text = btn.getAttribute('data-copy');
+        const text = btn.dataset.copy;
         await navigator.clipboard.writeText(text);
         const orig = btn.textContent;
         btn.textContent = '✅ 已复制';
         setTimeout(() => btn.textContent = orig, 1500);
+        showToast('✅ 已复制到剪贴板');
     });
 });
 
 // ==================== 计算器 ====================
-function updateCalcLabels() {
-    const type = document.querySelector('input[name="calcType"]:checked')?.value || 'winrate';
-    const unit = type === 'winrate' ? '胜率' : '场均伤害';
-    calcLabelUnit.textContent = unit;
-    calcTargetLabel.textContent = unit;
-    calcExpectedLabel.textContent = unit;
+calcTypeRadios.forEach(r => r.addEventListener('change', () => {
+    const type = r.value;
+    calcUnit.textContent = type === 'winrate' ? '胜率' : '场均伤害';
+    calcTargetL.textContent = type === 'winrate' ? '胜率' : '场均伤害';
+    calcExpL.textContent = type === 'winrate' ? '胜率' : '场均伤害';
     calcResult.style.display = 'none';
-}
-calcTypeRadios.forEach(r => r.addEventListener('change', updateCalcLabels));
+}));
 
-calcBtn.addEventListener('click', () => {
-    const type = document.querySelector('input[name="calcType"]:checked')?.value || 'winrate';
-    const cur = parseFloat(currentValueInput.value);
-    const battles = parseInt(currentBattlesInput.value, 10);
-    const target = parseFloat(targetValueInput.value);
-    const exp = parseFloat(expectedValueInput.value);
-    if ([cur, battles, target, exp].some(isNaN) || battles < 1) {
-        showCalcResult('❌ 请完整填写有效数值', '', true);
+document.getElementById('calcBtn').addEventListener('click', () => {
+    const type = document.querySelector('input[name="calcType"]:checked').value;
+    const cur = parseFloat(document.getElementById('currentValue').value);
+    const battles = parseInt(document.getElementById('currentBattles').value);
+    const target = parseFloat(document.getElementById('targetValue').value);
+    const exp = parseFloat(document.getElementById('expectedValue').value);
+    if (isNaN(cur) || isNaN(battles) || isNaN(target) || isNaN(exp) || battles < 1) {
+        calcResult.innerHTML = '❌ 请填写完整有效数值';
+        calcResult.style.display = 'block';
         return;
     }
     if (exp <= target) {
-        showCalcResult('⚠️ 无法达成', `预期每场${type==='winrate'?'胜率':'场均'}必须高于目标值`, true);
+        calcResult.innerHTML = '⚠️ 预期值必须高于目标值，否则无法达成';
+        calcResult.style.display = 'block';
         return;
     }
     const needed = (target - cur) * battles / (exp - target);
     if (needed <= 0) {
-        showCalcResult('✅ 已达目标', `当前数据已满足要求`);
+        calcResult.innerHTML = '✅ 当前数据已达标，无需再打';
+        calcResult.style.display = 'block';
+        return;
+    }
+    const round = Math.ceil(needed);
+    calcResult.innerHTML = `🎯 还需要 <strong>${round}</strong> 场<br><small>精确计算 ${needed.toFixed(2)} 场，向上取整</small>`;
+    calcResult.style.display = 'block';
+});
+
+// ==================== 新闻 ====================
+const newsData = [
+    { title:'🎉 夏季联赛预告', time:'2026-06-29', content:'2026夏季联赛即将开始，代练业务同步支持各类教学。' },
+    { title:'⚡ 周末优惠活动', time:'2026-06-29', content:'本周六日全场下单优惠10%，代练价格大幅下降，欢迎下单！' },
+    { title:'🛡️ 账号安全提醒', time:'2026-06-29', content:'近期出现第三方虚假代练，请认准本站唯一客服联系方式，谨防上当。' }
+];
+document.getElementById('newsContainer').innerHTML = newsData.map(n => `
+    <div class="news-item">
+        <div class="news-title">${n.title}</div>
+        <div class="news-time">${n.time}</div>
+        <div class="news-content">${n.content}</div>
+    </div>
+`).join('');
+
+// ==================== 用户登录状态管理 ====================
+function checkLoginStatus() {
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    if (token && username) {
+        openRegisterBtn.style.display = 'none';
+        openLoginBtn.style.display = 'none';
+        userMenu.style.display = 'block';
+        displayUsername.textContent = username;
     } else {
-        const round = Math.ceil(needed);
-        showCalcResult(`🎯 还需 ${round} 场`, `精确计算 ${needed.toFixed(2)} 场，向上取整`);
+        openRegisterBtn.style.display = 'inline-block';
+        openLoginBtn.style.display = 'inline-block';
+        userMenu.style.display = 'none';
+    }
+}
+
+logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    checkLoginStatus();
+    userDropdown.style.display = 'none';
+    showToast('👋 已退出登录');
+});
+
+userMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
+});
+document.addEventListener('click', () => {
+    userDropdown.style.display = 'none';
+});
+
+// ==================== 注册弹窗 ====================
+openRegisterBtn.addEventListener('click', () => { registerModal.style.display = 'flex'; });
+closeRegisterBtn.addEventListener('click', () => { registerModal.style.display = 'none'; regError.textContent = ''; });
+registerModal.addEventListener('click', (e) => { if (e.target === registerModal) { registerModal.style.display = 'none'; regError.textContent = ''; } });
+
+registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const referral = document.getElementById('regReferral').value.trim();
+    if (!username || !password) { regError.textContent = '用户名和密码必填'; return; }
+    if (password.length < 6) { regError.textContent = '密码至少6位'; return; }
+    try {
+        const res = await fetch(`${API_BASE}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, email, phone, referralCode: referral })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast('✅ 注册成功！请登录');
+            registerModal.style.display = 'none';
+            registerForm.reset();
+            regError.textContent = '';
+        } else {
+            regError.textContent = data.error || '注册失败';
+        }
+    } catch (err) {
+        regError.textContent = '网络错误，请检查后端是否启动';
     }
 });
 
-function showCalcResult(title, detail, warning = false) {
-    resultText.textContent = title;
-    resultText.className = warning ? 'result-text warning' : 'result-text';
-    resultDetail.textContent = detail;
-    calcResult.style.display = 'block';
-}
+// 注册与登录弹窗切换
+toLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    registerModal.style.display = 'none';
+    loginModal.style.display = 'flex';
+});
+toRegisterLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginModal.style.display = 'none';
+    registerModal.style.display = 'flex';
+});
 
-// ==================== 新闻（模拟公告） ====================
-function loadNews() {
-    // 模拟数据，后续可替换为 fetch('/api/announcements/active')
-    const news = [
-        { title: '🎉 新版本1.22更新预告', time: '2026-06-25', content: '全新YOH系列坦克即将上线，代练业务同步支持新车练级。' },
-        { title: '⚡ 周末双倍经验活动', time: '2026-06-24', content: '本周六日全服银币和经验加成30%，代练效率大幅提升，欢迎下单！' },
-        { title: '🛡️ 账号安全提醒', time: '2026-06-20', content: '近期出现第三方虚假代练，请认准本站唯一客服联系方式，谨防上当。' }
-    ];
-    if (news.length === 0) {
-        newsContainer.innerHTML = '<div class="news-empty">暂无公告</div>';
-        return;
+// ==================== 登录弹窗 ====================
+openLoginBtn.addEventListener('click', () => { loginModal.style.display = 'flex'; });
+closeLoginBtn.addEventListener('click', () => { loginModal.style.display = 'none'; loginError.textContent = ''; });
+loginModal.addEventListener('click', (e) => { if (e.target === loginModal) { loginModal.style.display = 'none'; loginError.textContent = ''; } });
+
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    if (!username || !password) { loginError.textContent = '用户名和密码不能为空'; return; }
+    try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('username', data.user.username);
+            checkLoginStatus();
+            loginModal.style.display = 'none';
+            loginError.textContent = '';
+            showToast('✅ 登录成功！');
+        } else {
+            loginError.textContent = data.error || '登录失败，请检查用户名密码';
+        }
+    } catch (err) {
+        loginError.textContent = '网络错误，请检查后端是否启动';
     }
-    newsContainer.innerHTML = news.map(n => `
-        <div class="news-item">
-            <div class="news-title">${n.title}</div>
-            <div class="news-time">${n.time}</div>
-            <div class="news-content">${n.content}</div>
-        </div>
-    `).join('');
-}
+});
 
-// ==================== Toast ====================
-function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2000);
-}
-
-// ==================== 初始化 ====================
-function init() {
-    updateDetailCards();
-    refreshPrice();
-    quantityInput.value = 1;
-    updateCalcLabels();
-    loadNews();
-}
-document.addEventListener('DOMContentLoaded', init);
+// 页面加载启动
+init();
