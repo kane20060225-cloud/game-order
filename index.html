@@ -283,7 +283,47 @@
             </button>
             <p class="copy-hint">复制后可直接发送给客服，快速下单</p>
         </section>
-
+        <section class="section-card calculator-section" id="sectionCalculator">
+            <div class="section-header">
+                <span class="section-number">🧮</span>
+                <h2 class="section-title">自助场均/胜率计算器</h2>
+                <span class="section-hint">独立工具</span>
+            </div>
+            <div class="calculator-type">
+                <span class="calc-type-label">计算类型：</span>
+                <label class="calc-type-option">
+                    <input type="radio" name="calcType" value="winrate" checked>
+                    <span class="calc-type-btn">📈 胜率</span>
+                </label>
+                <label class="calc-type-option">
+                    <input type="radio" name="calcType" value="average">
+                    <span class="calc-type-btn">🎯 场均伤害</span>
+                </label>
+            </div>
+            <div class="calculator-inputs" id="calcInputs">
+                <div class="calc-row">
+                    <label class="calc-label" for="currentValue">当前<span id="calcLabelUnit">胜率</span> (%)</label>
+                    <input type="number" class="calc-input" id="currentValue" placeholder="例如 55" step="0.01" min="0" max="100">
+                </div>
+                <div class="calc-row">
+                    <label class="calc-label" for="currentBattles">当前场次</label>
+                    <input type="number" class="calc-input" id="currentBattles" placeholder="例如 5000" step="1" min="1">
+                </div>
+                <div class="calc-row">
+                    <label class="calc-label" for="targetValue">目标<span id="calcTargetLabel">胜率</span> (%)</label>
+                    <input type="number" class="calc-input" id="targetValue" placeholder="例如 60" step="0.01" min="0" max="100">
+                </div>
+                <div class="calc-row">
+                    <label class="calc-label" for="expectedValue">预期每场<span id="calcExpectedLabel">胜率</span> (%)</label>
+                    <input type="number" class="calc-input" id="expectedValue" placeholder="例如 70" step="0.01" min="0" max="100">
+                </div>
+            </div>
+            <button type="button" class="calc-btn" id="calcBtn">🔍 计算所需场次</button>
+            <div class="calc-result" id="calcResult" style="display: none;">
+                <div class="result-text" id="resultText"></div>
+                <div class="result-detail" id="resultDetail"></div>
+            </div>
+        </section>
         <!-- 客服联系方式 -->
         <section class="section-card contact-section" id="sectionContact">
             <div class="section-header">

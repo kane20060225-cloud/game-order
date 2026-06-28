@@ -352,3 +352,107 @@ function init() {
 
 // 启动
 document.addEventListener('DOMContentLoaded', init);
+// ==================== 新增：自助场均/胜率计算器 ====================
+const calcTypeRadios = document.querySelectorAll('input[name="calcType"]');
+const calcLabelUnit = document.getElementById('calcLabelUnit');
+const calcTargetLabel = document.getElementById('calcTargetLabel');
+const calcExpectedLabel = document.getElementById('calcExpectedLabel');
+const currentValueInput = document.getElementById('currentValue');
+const currentBattlesInput = document.getElementById('currentBattles');
+const targetValueInput = document.getElementById('targetValue');
+const expectedValueInput = document.getElementById('expectedValue');
+const calcBtn = document.getElementById('calcBtn');
+const calcResult = document.getElementById('calcResult');
+const resultText = document.getElementById('resultText');
+const resultDetail = document.getElementById('resultDetail');
+
+function updateCalcLabels() {
+    const type = document.querySelector('input[name="calcType"]:checked')?.value || 'winrate';
+    const unit = type === 'winrate' ? '胜率' : '场均伤害';
+    calcLabelUnit.textContent = unit;
+    calcTargetLabel.textContent = unit;
+    calcExpectedLabel.textContent = unit;
+    // 清空结果
+    calcResult.style.display = 'none';
+    resultText.className = 'result-text';
+}
+
+calcTypeRadios.forEach(radio => {
+    radio.addEventListener('change', updateCalcLabels);
+});
+
+calcBtn.addEventListener('click', () => {
+    const type = document.querySelector('input[name="calcType"]:checked')?.value || 'winrate';
+    const current = parseFloat(currentValueInput.value);
+    const battles = parseInt(currentBattlesInput.value, 10);
+    const target = parseFloat(targetValueInput.value);
+    const expected = parseFloat(expectedValueInput.value);
+
+    // 验证输入
+    if (isNaN(current) || isNaN(battles) || isNaN(target) || isNaN(expected)) {
+        resultText.textContent = '❌ 请完整填写所有数值';
+        resultText.className = 'result-text warning';
+        resultDetail.textContent = '';
+        calcResult.style.display = 'block';
+        return;
+    }
+    if (battles <= 0) {
+        resultText.textContent = '❌ 当前场次必须大于0';
+        resultText.className = 'result-text warning';
+        resultDetail.textContent = '';
+        calcResult.style.display = 'block';
+        return;
+    }
+    if (type === 'winrate') {
+        if (current < 0 || current > 100 || target < 0 || target > 100 || expected < 0 || expected > 100) {
+            resultText.textContent = '❌ 胜率数值应在0-100之间';
+            resultText.className = 'result-text warning';
+            resultDetail.textContent = '';
+            calcResult.style.display = 'block';
+            return;
+        }
+    }
+
+    // 计算逻辑
+    if (target === current) {
+        resultText.textContent = '✅ 当前数据已达标，无需额外场次';
+        resultText.className = 'result-text';
+        resultDetail.textContent = `当前${type === 'winrate' ? '胜率' : '场均'}已等于目标值。`;
+        calcResult.style.display = 'block';
+        return;
+    }
+
+    if (expected <= target) {
+        resultText.textContent = '⚠️ 无法达成目标';
+        resultText.className = 'result-text warning';
+        resultDetail.textContent = `预期每场${type === 'winrate' ? '胜率' : '场均'} (${expected}) 必须高于目标值 (${target})，否则数据不会提升。`;
+        calcResult.style.display = 'block';
+        return;
+    }
+
+    const numerator = (target - current) * battles;
+    const denominator = expected - target;
+    const needed = numerator / denominator;
+
+    if (needed <= 0) {
+        resultText.textContent = '✅ 当前数据已高于目标值，无需再打';
+        resultText.className = 'result-text';
+        resultDetail.textContent = `当前${type === 'winrate' ? '胜率' : '场均'} (${current}) 已经超过目标 (${target})。`;
+        calcResult.style.display = 'block';
+        return;
+    }
+
+    const rounded = Math.ceil(needed);
+    const unitName = type === 'winrate' ? '胜率' : '场均伤害';
+    resultText.textContent = `🎯 还需要打 ${rounded} 场`;
+    resultText.className = 'result-text';
+    resultDetail.textContent =
+        `当前${unitName}：${current}（场次 ${battles}）\n` +
+        `目标${unitName}：${target}\n` +
+        `预期每场${unitName}：${expected}\n` +
+        `精确计算需 ${needed.toFixed(2)} 场，向上取整为 ${rounded} 场。`;
+    calcResult.style.display = 'block';
+});
+
+// 初始化标签
+updateCalcLabels();
