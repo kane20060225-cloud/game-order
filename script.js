@@ -200,17 +200,22 @@ copyBtn.addEventListener('click', async () => {
     const detailKey = getSelectedDetail();
     const playerChecked = document.querySelector('input[name="player"]:checked');
     const playerInfo = playerData.find(pd => pd.key === playerChecked?.value) || { name:'未知', rate:getPlayerRate() };
-        const remark = document.getElementById('remarkInput')?.value.trim() || '';
+    const remark = document.getElementById('remarkInput')?.value.trim() || '';
     const remarkLine = remark ? `\n📝 备注：${remark}` : '';
 
-    const order = `【坦克世界闪击战代练订单】
+    // 获取当前登录用户信息
+    const token = localStorage.getItem('token');
+    const currentUsername = localStorage.getItem('username');
+    const userLine = (token && currentUsername) ? `\n👤 下单用户：${currentUsername}` : '';
+
+    const order = `【WOTB情谊代练订单】
 🎯 项目：${p.name}
 📋 详情：方案${detailKey.toUpperCase()} - ${p[detailKey].desc}
 🔢 数量：${getQty()}
 👤 打手：${playerInfo.name} (${playerInfo.rate}x)
 ⚡ 加急：${isUrgent()?'是':'否'}
 💰 总价：¥${calcTotal().toFixed(2)}
-📅 下单时间：${new Date().toLocaleString()}${remarkLine}
+📅 下单时间：${new Date().toLocaleString()}${remarkLine}${userLine}
 ---
 如需帮助请联系客服`;
     try {
@@ -250,25 +255,56 @@ document.getElementById('calcBtn').addEventListener('click', () => {
     const battles = parseInt(document.getElementById('currentBattles').value);
     const target = parseFloat(document.getElementById('targetValue').value);
     const exp = parseFloat(document.getElementById('expectedValue').value);
+    const calcResultDiv = document.getElementById('calcResult');
+    const calcResultText = document.getElementById('calcResultText');
+    const copyCalcBtn = document.getElementById('copyCalcResultBtn');
+
+    // 输入验证
     if (isNaN(cur) || isNaN(battles) || isNaN(target) || isNaN(exp) || battles < 1) {
-        calcResult.innerHTML = '❌ 请填写完整有效数值';
-        calcResult.style.display = 'block';
+        calcResultText.innerHTML = '❌ 请填写完整有效数值';
+        copyCalcBtn.style.display = 'none';
+        calcResultDiv.style.display = 'block';
         return;
     }
     if (exp <= target) {
-        calcResult.innerHTML = '⚠️ 预期值必须高于目标值，否则无法达成';
-        calcResult.style.display = 'block';
+        calcResultText.innerHTML = '⚠️ 预期值必须高于目标值，否则无法达成';
+        copyCalcBtn.style.display = 'none';
+        calcResultDiv.style.display = 'block';
         return;
     }
+
     const needed = (target - cur) * battles / (exp - target);
     if (needed <= 0) {
-        calcResult.innerHTML = '✅ 当前数据已达标，无需再打';
-        calcResult.style.display = 'block';
+        calcResultText.innerHTML = '✅ 当前数据已达标，无需再打';
+        copyCalcBtn.style.display = 'none';
+        calcResultDiv.style.display = 'block';
         return;
     }
+
     const round = Math.ceil(needed);
-    calcResult.innerHTML = `🎯 还需要 <strong>${round}</strong> 场<br><small>精确计算 ${needed.toFixed(2)} 场，向上取整</small>`;
-    calcResult.style.display = 'block';
+
+    // 显示结果
+    calcResultText.innerHTML = `🎯 还需要 <strong>${round}</strong> 场<br><small>精确计算 ${needed.toFixed(2)} 场，向上取整</small>`;
+    copyCalcBtn.style.display = 'inline-block';
+    calcResultDiv.style.display = 'block';
+
+    // 复制结果（含输入参数）
+    copyCalcBtn.onclick = async () => {
+        const typeText = type === 'winrate' ? '胜率' : '场均伤害';
+        const unit = type === 'winrate' ? '%' : '';
+        const fullText = `【坦克世界闪击战 - 自助计算】
+类型：${typeText}
+当前数据：${cur}${unit}（场次 ${battles}）
+目标数据：${target}${unit}
+预期每场：${exp}${unit}
+计算结果：需要再打 ${round} 场（精确计算 ${needed.toFixed(2)} 场）`;
+        try {
+            await navigator.clipboard.writeText(fullText);
+            showToast('✅ 完整结果已复制');
+        } catch (err) {
+            showToast('❌ 复制失败');
+        }
+    };
 });
 
 // ==================== 新闻 ====================
@@ -289,6 +325,8 @@ document.getElementById('newsContainer').innerHTML = newsData.map(n => `
 function checkLoginStatus() {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
+
     if (token && username) {
         openRegisterBtn.style.display = 'none';
         openLoginBtn.style.display = 'none';
@@ -299,11 +337,18 @@ function checkLoginStatus() {
         openLoginBtn.style.display = 'inline-block';
         userMenu.style.display = 'none';
     }
+
+    // 安全显示管理面板按钮
+    const adminBtn = document.getElementById('adminPanelBtn');
+    if (adminBtn) {
+        adminBtn.style.display = (role === 'admin') ? 'block' : 'none';
+    }
 }
 
 logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    localStorage.removeItem('role');  // 添加到退出登录逻辑中
     checkLoginStatus();
     userDropdown.style.display = 'none';
     showToast('👋 已退出登录');
@@ -383,6 +428,7 @@ loginForm.addEventListener('submit', async (e) => {
         if (res.ok && data.success) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('username', data.user.username);
+            localStorage.setItem('role', data.user.role);
             checkLoginStatus();
             loginModal.style.display = 'none';
             loginError.textContent = '';
@@ -449,41 +495,60 @@ async function loadProfile() {
 
 // 加载订单列表
 async function loadOrders() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        orderList.innerHTML = '<p style="color:var(--red)">请先登录</p>';
+    // 重新获取元素，确保不为空
+    const list = document.getElementById('orderList');
+    if (!list) {
+        console.error('❌ orderList 容器未找到');
         return;
     }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+        list.innerHTML = '<p style="color:var(--red)">请先登录</p>';
+        return;
+    }
+
     try {
         const res = await fetch(`${API_BASE}/user/orders`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!res.ok) throw new Error('获取失败');
         const orders = await res.json();
-        if (orders.length === 0) {
-            orderList.innerHTML = '<p style="color:var(--text-muted)">暂无订单</p>';
+        if (!Array.isArray(orders) || orders.length === 0) {
+            list.innerHTML = '<p style="color:var(--text-muted)">暂无订单</p>';
             return;
         }
-        const statusMap = {
-            pending: '待接单',
-            playing: '代练中',
-            done: '已完成'
-        };
-        let html = '<table class="order-table"><tr><th>订单号</th><th>项目</th><th>打手</th><th>金额</th><th>状态</th><th>时间</th></tr>';
+
+        const statusMap = { pending: '待接单', playing: '代练中', done: '已完成' };
+        const paymentStatusMap = { unpaid: '未支付', pending: '待确认', paid: '已支付' };
+        let html = '<table class="order-table"><tr><th>订单号</th><th>项目</th><th>金额</th><th>状态</th><th>支付</th><th>操作</th><th>时间</th></tr>';
+
         orders.forEach(o => {
+            let actionHtml = '';
+            if (o.payment_status === 'unpaid') {
+                actionHtml = `<button class="upload-payment-btn" data-order="${o.order_no}" style="display:inline-block;visibility:visible;">上传凭证</button>`;
+            } else if (o.payment_status === 'paid') {
+                actionHtml = '已确认';
+            } else {
+                actionHtml = '审核中';
+            }
+
             html += `<tr>
                 <td>${o.order_no}</td>
                 <td>${o.project} - ${o.detail}</td>
-                <td>${o.player_name}</td>
                 <td>¥${o.total_price}</td>
                 <td><span class="order-status status-${o.status}">${statusMap[o.status] || o.status}</span></td>
+                <td><span class="payment-status payment-${o.payment_status}">${paymentStatusMap[o.payment_status] || '未知'}</span></td>
+                <td>${actionHtml}</td>
                 <td>${new Date(o.created_at).toLocaleString()}</td>
             </tr>`;
         });
         html += '</table>';
-        orderList.innerHTML = html;
+        list.innerHTML = html;
+        console.log('✅ 订单列表已渲染，按钮数量：', document.querySelectorAll('.upload-payment-btn').length);
     } catch (err) {
-        orderList.innerHTML = '<p style="color:var(--red)">加载失败</p>';
+        console.error('加载订单失败：', err);
+        list.innerHTML = '<p style="color:var(--red)">加载失败</p>';
     }
 }
 
@@ -537,3 +602,277 @@ submitOrderBtn.addEventListener('click', async () => {
         showToast('❌ 网络错误，请稍后重试');
     }
 });
+
+
+// ==================== 管理面板 ====================
+const adminPanelBtn = document.getElementById('adminPanelBtn');
+const adminModal = document.getElementById('adminModal');
+const closeAdminBtn = document.getElementById('closeAdminBtn');
+const statusFilter = document.getElementById('statusFilter');
+const refreshOrdersBtn = document.getElementById('refreshOrdersBtn');
+const adminOrderList = document.getElementById('adminOrderList');
+
+adminPanelBtn.addEventListener('click', () => {
+    adminModal.style.display = 'flex';
+    loadAdminOrders();
+});
+closeAdminBtn.addEventListener('click', () => adminModal.style.display = 'none');
+adminModal.addEventListener('click', (e) => { if (e.target === adminModal) adminModal.style.display = 'none'; });
+
+async function loadAdminOrders() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    const status = statusFilter.value;
+    try {
+        const res = await fetch(`${API_BASE}/admin/orders`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const orders = await res.json();
+        if (!Array.isArray(orders)) throw new Error('数据错误');
+        // 前端筛选（后端也可支持筛选参数，这里简单处理）
+        const filtered = status ? orders.filter(o => o.status === status) : orders;
+        renderAdminOrders(filtered);
+    } catch (err) {
+        adminOrderList.innerHTML = '<p style="color:var(--red)">加载失败</p>';
+    }
+}
+
+function renderAdminOrders(orders) {
+    const statusOptions = ['pending', 'playing', 'done'];
+    const statusText = { pending: '待接单', playing: '代练中', done: '已完成' };
+    const paymentStatusMap = {
+        unpaid: '未支付',
+        pending: '待确认',
+        paid: '已支付'
+    };
+
+    if (orders.length === 0) {
+        adminOrderList.innerHTML = '<p>暂无订单</p>';
+        return;
+    }
+
+    let html = '<table><tr><th>订单号</th><th>用户</th><th>项目</th><th>打手</th><th>金额</th><th>状态</th><th>支付</th><th>操作</th><th>时间</th></tr>';
+    orders.forEach(o => {
+        html += `<tr>
+            <td>${o.order_no}</td>
+            <td>${o.username}</td>
+            <td>${o.project} - ${o.detail}</td>
+            <td>${o.player_name}</td>
+            <td>¥${o.total_price}</td>
+            <td><span class="order-status status-${o.status}">${statusText[o.status] || o.status}</span></td>
+            <td><span class="payment-status payment-${o.payment_status}">${paymentStatusMap[o.payment_status] || o.payment_status}</span></td>
+            <td>
+                <select class="status-select" data-order="${o.order_no}" onchange="updateOrderStatus(this)">
+                    ${statusOptions.map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${statusText[s]}</option>`).join('')}
+                </select>
+                ${o.payment_status === 'pending' ? `<button class="confirm-payment-btn" data-order="${o.order_no}">确认收款</button>` : ''}
+                ${o.payment_screenshot ? ` <a href="/uploads/${o.payment_screenshot}" target="_blank" style="font-size:0.7rem;">截图</a>` : ''}
+            </td>
+            <td>${new Date(o.created_at).toLocaleString()}</td>
+        </tr>`;
+    });
+    html += '</table>';
+    adminOrderList.innerHTML = html;
+}
+
+// 修改订单状态（管理员）
+window.updateOrderStatus = async function(selectEl) {
+    const orderNo = selectEl.dataset.order;
+    const newStatus = selectEl.value;
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`${API_BASE}/admin/orders/${orderNo}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast('✅ 状态更新成功');
+        } else {
+            showToast('❌ ' + (data.error || '更新失败'));
+            loadAdminOrders(); // 恢复
+        }
+    } catch (err) {
+        showToast('❌ 网络错误');
+        loadAdminOrders();
+    }
+};
+
+// 管理员确认收款
+document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('confirm-payment-btn')) {
+        const orderNo = e.target.dataset.order;
+        const token = localStorage.getItem('token');
+        if (!token) return showToast('请先登录');
+        try {
+            const res = await fetch(`${API_BASE}/admin/orders/${orderNo}/confirm-payment`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showToast('✅ 已确认支付，订单已转为代练中');
+                loadAdminOrders();
+            } else {
+                showToast('❌ ' + (data.error || '操作失败'));
+            }
+        } catch (err) {
+            showToast('❌ 网络错误');
+        }
+    }
+});
+
+statusFilter.addEventListener('change', loadAdminOrders);
+refreshOrdersBtn.addEventListener('click', loadAdminOrders);
+
+// 修改订单状态函数（全局）
+window.updateOrderStatus = async function(selectEl) {
+    const orderNo = selectEl.dataset.order;
+    const newStatus = selectEl.value;
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`${API_BASE}/admin/orders/${orderNo}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast('✅ 状态更新成功');
+        } else {
+            showToast('❌ ' + (data.error || '更新失败'));
+            loadAdminOrders(); // 刷新恢复原状
+        }
+    } catch (err) {
+        showToast('❌ 网络错误');
+        loadAdminOrders();
+    }
+};
+
+statusFilter.addEventListener('change', loadAdminOrders);
+refreshOrdersBtn.addEventListener('click', loadAdminOrders);
+
+
+// ==================== 支付凭证上传 ====================
+let currentOrderNo = '';
+const paymentModal = document.getElementById('paymentModal');
+const closePaymentBtn = document.getElementById('closePaymentBtn');
+const paymentFile = document.getElementById('paymentFile');
+const pasteArea = document.getElementById('pasteArea');
+const previewImage = document.getElementById('previewImage');
+const submitPaymentBtn = document.getElementById('submitPaymentBtn');
+const paymentError = document.getElementById('paymentError');
+
+// 打开上传弹窗
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('upload-payment-btn')) {
+        currentOrderNo = e.target.dataset.order;
+        paymentModal.style.display = 'flex';
+        paymentError.textContent = '';
+        previewImage.style.display = 'none';
+        paymentFile.value = '';
+        pasteArea.innerText = '';
+    }
+});
+
+closePaymentBtn.addEventListener('click', () => paymentModal.style.display = 'none');
+paymentModal.addEventListener('click', (e) => { if (e.target === paymentModal) paymentModal.style.display = 'none'; });
+
+// 文件选择预览
+paymentFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        previewImage.src = ev.target.result;
+        previewImage.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+});
+
+// 粘贴截图
+pasteArea.addEventListener('paste', (e) => {
+    const items = e.clipboardData.items;
+    for (let item of items) {
+        if (item.type.indexOf('image') !== -1) {
+            const blob = item.getAsFile();
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                previewImage.src = ev.target.result;
+                previewImage.style.display = 'block';
+            };
+            reader.readAsDataURL(blob);
+            e.preventDefault();
+        }
+    }
+});
+
+// 提交凭证
+submitPaymentBtn.addEventListener('click', async () => {
+    const token = localStorage.getItem('token');
+    if (!token) { paymentError.textContent = '请先登录'; return; }
+    if (!currentOrderNo) { paymentError.textContent = '订单号异常'; return; }
+    
+    // 获取图片 base64
+    let screenshot = previewImage.src;
+    if (!screenshot || screenshot === window.location.href) {
+        paymentError.textContent = '请先选择或粘贴截图';
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/orders/${currentOrderNo}/payment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ screenshot })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast('✅ 支付凭证已提交，等待确认');
+            paymentModal.style.display = 'none';
+            // 刷新订单列表
+            if (profileModal.style.display === 'flex') {
+                await loadOrders();
+            }
+        } else {
+            paymentError.textContent = data.error || '提交失败';
+        }
+    } catch (err) {
+        paymentError.textContent = '网络错误';
+    }
+});
+
+// 管理员确认收款
+document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('confirm-payment-btn')) {
+        const orderNo = e.target.dataset.order;
+        const token = localStorage.getItem('token');
+        if (!token) return showToast('请登录');
+        try {
+            const res = await fetch(`${API_BASE}/admin/orders/${orderNo}/confirm-payment`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showToast('✅ 已确认支付');
+                loadAdminOrders();
+            } else {
+                showToast('❌ ' + (data.error || '操作失败'));
+            }
+        } catch (err) {
+            showToast('❌ 网络错误');
+        }
+    }
+});
+

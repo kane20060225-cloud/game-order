@@ -24,6 +24,7 @@
                 </button>
                 <div class="user-dropdown" id="userDropdown" style="display: none;">
                    <button id="profileBtn">个人中心</button>
+                   <button id="adminPanelBtn" style="display:none;">管理面板</button>
                    <button id="logoutBtn">退出登录</button>
                 </div>
             </div>
@@ -262,9 +263,9 @@
                         <span class="contact-icon">💚</span>
                         <div class="contact-info">
                             <span class="contact-label">微信客服</span>
-                            <span class="contact-value">WOT-Blitz-DL001</span>
+                            <span class="contact-value">WOTB-QYDL-001</span>
                         </div>
-                        <button class="contact-copy-btn" data-copy="WOT-Blitz-DL001">📋 复制</button>
+                        <button class="contact-copy-btn" data-copy="WOTB-QYDL-001">📋 复制</button>
                     </div>
                     <div class="contact-item">
                         <span class="contact-icon">🐧</span>
@@ -324,7 +325,10 @@
                     </div>
                 </div>
                 <button class="calc-btn" id="calcBtn">🔍 计算所需场次</button>
-                <div class="calc-result" id="calcResult" style="display: none;"></div>
+                <div class="calc-result" id="calcResult" style="display: none;">
+                <div id="calcResultText"></div>
+                <button class="copy-calc-btn" id="copyCalcResultBtn" style="display:none;">📋 复制结果</button>
+                </div>
             </section>
             <p class="tool-hint">该工具独立计算，不影响代练板块的价格。</p>
         </div>
@@ -419,6 +423,53 @@
         </div>
     </div>
 </div>
+
+<!-- 管理面板弹窗 -->
+<div class="modal-overlay" id="adminModal" style="display: none;">
+    <div class="modal-card admin-modal">
+        <div class="modal-header">
+            <h3>🛠️ 管理面板</h3>
+            <button class="modal-close" id="closeAdminBtn">&times;</button>
+        </div>
+        <div class="admin-content">
+            <div class="admin-filter">
+                <label>筛选状态：</label>
+                <select id="statusFilter">
+                    <option value="">全部</option>
+                    <option value="pending">待接单</option>
+                    <option value="playing">代练中</option>
+                    <option value="done">已完成</option>
+                </select>
+                <button id="refreshOrdersBtn">刷新</button>
+            </div>
+            <div id="adminOrderList" class="admin-order-list">加载中...</div>
+        </div>
+    </div>
+</div>
+
+<!-- 上传支付凭证弹窗 -->
+<div class="modal-overlay" id="paymentModal" style="display: none;">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>📎 上传支付凭证</h3>
+            <button class="modal-close" id="closePaymentBtn">&times;</button>
+        </div>
+        <div class="form-group">
+            <label>选择截图文件</label>
+            <input type="file" id="paymentFile" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label>或直接粘贴截图 (Ctrl+V)</label>
+            <div id="pasteArea" class="paste-area" contenteditable="true" style="height:100px;border:1px dashed var(--border);padding:10px;border-radius:6px;background:#111927;color:var(--text);font-size:0.9rem;">
+                在此区域按 Ctrl+V 粘贴截图
+            </div>
+            <img id="previewImage" style="max-width:100%;margin-top:10px;display:none;">
+        </div>
+        <div class="form-error" id="paymentError"></div>
+        <button class="submit-btn" id="submitPaymentBtn">提交凭证</button>
+    </div>
+</div>
+
     <script src="script.js"></script>
 </body>
 </html>

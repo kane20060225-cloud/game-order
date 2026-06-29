@@ -587,3 +587,199 @@ body {
 .status-pending { background: rgba(248,81,73,0.2); color: var(--red); }
 .status-playing { background: rgba(240,160,80,0.2); color: var(--accent); }
 .status-done { background: rgba(72,187,120,0.2); color: var(--green); }
+
+/* 管理面板 */
+.admin-modal {
+    max-width: 800px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+.admin-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+.admin-filter select, .admin-filter button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #111927;
+    color: var(--text);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.admin-order-list table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.admin-order-list th, .admin-order-list td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+}
+.admin-order-list th {
+    background: rgba(240,160,80,0.1);
+    color: var(--accent);
+}
+.status-select {
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: #111927;
+    color: var(--text);
+    font-size: 0.75rem;
+}
+
+
+
+/* 计算器复制按钮 */
+.copy-calc-btn {
+    margin-top: 10px;
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--accent);
+    background: rgba(240,160,80,0.1);
+    color: var(--accent);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+.copy-calc-btn:hover {
+    background: rgba(240,160,80,0.2);
+}
+
+
+/* ========== 移动端适配 ========== */
+@media (max-width: 480px) {
+    .top-bar {
+        padding: 12px 16px;
+    }
+    .logo-text {
+        font-size: 1rem;
+    }
+    .register-btn, .login-btn {
+        padding: 6px 14px;
+        font-size: 0.8rem;
+    }
+    .menu-title {
+        font-size: 1.3rem;
+        margin-bottom: 24px;
+    }
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+    .menu-card {
+        padding: 24px 16px;
+    }
+    .container {
+        padding: 0 12px 30px;
+        gap: 16px;
+    }
+    .card {
+        padding: 16px 12px;
+    }
+    .project-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    .card-inner {
+        padding: 10px 4px;
+    }
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    .player-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .quantity-input {
+        width: 70px;
+        height: 42px;
+        font-size: 1.1rem;
+    }
+    .qty-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+    .price-total {
+        font-size: 1.3rem;
+    }
+    .copy-btn, .submit-order-btn {
+        font-size: 0.9rem;
+        padding: 12px;
+    }
+    .calc-grid {
+        grid-template-columns: 1fr;
+    }
+    .contact-grid {
+        gap: 8px;
+    }
+    .contact-item {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .contact-copy-btn {
+        width: 100%;
+        text-align: center;
+    }
+    .modal-card {
+        padding: 20px 16px;
+        width: 95%;
+    }
+    .admin-modal, .profile-modal {
+        max-width: 95%;
+    }
+}
+
+
+.payment-status { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; }
+.payment-unpaid { background: rgba(248,81,73,0.2); color: var(--red); }
+.payment-pending { background: rgba(240,160,80,0.2); color: var(--accent); }
+.payment-paid { background: rgba(72,187,120,0.2); color: var(--green); }
+
+.upload-payment-btn, .confirm-payment-btn {
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--accent);
+    background: rgba(240,160,80,0.1);
+    color: var(--accent);
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin: 2px;
+}
+.upload-payment-btn:hover, .confirm-payment-btn:hover {
+    background: rgba(240,160,80,0.2);
+}
+.paste-area {
+    cursor: text;
+}
+
+/* ========== 个人中心弹窗加大 ========== */
+.profile-modal {
+    width: 1100px;                /* 原为 600px，加大到 700 */
+    max-width: 95vw;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* 订单表格自适应 */
+.order-table {
+    min-width: 700px;            /* 确保表格不会被压缩太窄 */
+    font-size: 0.82rem;
+}
+.order-table th,
+.order-table td {
+    padding: 8px 6px;
+    white-space: nowrap;        /* 防止文字换行 */
+}
+
+/* 上传凭证按钮突出 */
+.upload-payment-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    display: inline-block;
+}
