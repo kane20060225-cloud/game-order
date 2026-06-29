@@ -397,3 +397,143 @@ loginForm.addEventListener('submit', async (e) => {
 
 // 页面加载启动
 init();
+
+// ==================== 个人中心弹窗 ====================
+const profileBtn = document.getElementById('profileBtn');
+const profileModal = document.getElementById('profileModal');
+const closeProfileBtn = document.getElementById('closeProfileBtn');
+const profileInfo = document.getElementById('profileInfo');
+const orderList = document.getElementById('orderList');
+
+// 打开个人中心
+profileBtn.addEventListener('click', async () => {
+    profileModal.style.display = 'flex';
+    await loadProfile();
+    await loadOrders();
+});
+
+// 关闭个人中心
+closeProfileBtn.addEventListener('click', () => {
+    profileModal.style.display = 'none';
+});
+profileModal.addEventListener('click', (e) => {
+    if (e.target === profileModal) profileModal.style.display = 'none';
+});
+
+// 加载个人信息
+async function loadProfile() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        profileInfo.innerHTML = '<p style="color:var(--red)">请先登录</p>';
+        return;
+    }
+    try {
+        const res = await fetch(`${API_BASE}/user/profile`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('获取失败');
+        const user = await res.json();
+        profileInfo.innerHTML = `
+            <p><span>用户名：</span><span>${user.username}</span></p>
+            <p><span>邮箱：</span><span>${user.email || '未填写'}</span></p>
+            <p><span>手机：</span><span>${user.phone || '未填写'}</span></p>
+            <p><span>余额：</span><span>¥${user.balance}</span></p>
+            <p><span>信誉分：</span><span>${user.reputation}</span></p>
+            <p><span>推荐码：</span><span>${user.referral_code}</span></p>
+            <p><span>注册时间：</span><span>${new Date(user.created_at).toLocaleString()}</span></p>
+        `;
+    } catch (err) {
+        profileInfo.innerHTML = '<p style="color:var(--red)">加载失败</p>';
+    }
+}
+
+// 加载订单列表
+async function loadOrders() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        orderList.innerHTML = '<p style="color:var(--red)">请先登录</p>';
+        return;
+    }
+    try {
+        const res = await fetch(`${API_BASE}/user/orders`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('获取失败');
+        const orders = await res.json();
+        if (orders.length === 0) {
+            orderList.innerHTML = '<p style="color:var(--text-muted)">暂无订单</p>';
+            return;
+        }
+        const statusMap = {
+            pending: '待接单',
+            playing: '代练中',
+            done: '已完成'
+        };
+        let html = '<table class="order-table"><tr><th>订单号</th><th>项目</th><th>打手</th><th>金额</th><th>状态</th><th>时间</th></tr>';
+        orders.forEach(o => {
+            html += `<tr>
+                <td>${o.order_no}</td>
+                <td>${o.project} - ${o.detail}</td>
+                <td>${o.player_name}</td>
+                <td>¥${o.total_price}</td>
+                <td><span class="order-status status-${o.status}">${statusMap[o.status] || o.status}</span></td>
+                <td>${new Date(o.created_at).toLocaleString()}</td>
+            </tr>`;
+        });
+        html += '</table>';
+        orderList.innerHTML = html;
+    } catch (err) {
+        orderList.innerHTML = '<p style="color:var(--red)">加载失败</p>';
+    }
+}
+
+// ==================== 提交订单 ====================
+const submitOrderBtn = document.getElementById('submitOrderBtn');
+submitOrderBtn.addEventListener('click', async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        showToast('❌ 请先登录后再提交订单');
+        return;
+    }
+    const project = getSelectedProject();
+    const detail = getSelectedDetail();
+    const qty = getQty();
+    const playerRate = getPlayerRate();
+    const playerChecked = document.querySelector('input[name="player"]:checked');
+    const playerKey = playerChecked ? playerChecked.value : 'ding';
+    const playerInfo = playerData.find(p => p.key === playerKey) || { name: '未选', rate: playerRate };
+    const urgent = isUrgent();
+    const total = calcTotal();
+    const base = projectDetails[project][detail].price;
+    const remark = document.getElementById('remarkInput')?.value.trim() || '';
+
+    const body = {
+        project: projectDetails[project].name,
+        detail: `${detail.toUpperCase()} - ${projectDetails[project][detail].desc}`,
+        quantity: qty,
+        player_name: playerInfo.name,
+        price: base,
+        urgent,
+        total_price: total,
+        remark
+    };
+
+    try {
+        const res = await fetch(`${API_BASE}/orders`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast(`✅ 订单提交成功！订单号：${data.order_no}`);
+        } else {
+            showToast('❌ ' + (data.error || '提交失败'));
+        }
+    } catch (err) {
+        showToast('❌ 网络错误，请稍后重试');
+    }
+});

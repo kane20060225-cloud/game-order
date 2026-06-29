@@ -11,7 +11,7 @@
     <header class="top-bar">
         <div class="logo-area">
             <span class="logo-icon">🎯</span>
-            <span class="logo-text">坦克世界闪击战情谊代练</span>
+            <span class="logo-text">WOTB情谊代练</span>
         </div>
         <div class="user-actions" id="userActions">
             <!-- 未登录时显示注册/登录按钮 -->
@@ -23,7 +23,8 @@
                     <span id="displayUsername"></span> ▼
                 </button>
                 <div class="user-dropdown" id="userDropdown" style="display: none;">
-                    <button id="logoutBtn">退出登录</button>
+                   <button id="profileBtn">个人中心</button>
+                   <button id="logoutBtn">退出登录</button>
                 </div>
             </div>
         </div>
@@ -239,12 +240,15 @@
                     </div>
                 </div>
 
-                <button class="copy-btn" id="copyBtn">
-                    <span class="copy-icon">📋</span>
-                    <span class="copy-text">一键复制订单</span>
-                    <span class="copy-feedback" id="copyFeedback">✅ 已复制！</span>
-                </button>
-                <p class="copy-hint">复制后可直接发送给客服，快速下单</p>
+                  <button class="copy-btn" id="copyBtn">
+                     <span class="copy-icon">📋</span>
+                     <span class="copy-text">一键复制订单</span>
+                     <span class="copy-feedback" id="copyFeedback">✅ 已复制！</span>
+                 </button>
+                 <button class="submit-order-btn" id="submitOrderBtn">🚀 提交订单
+                 </button>
+                 <p class="submit-hint">登录后提交订单可跟踪进度</p>
+                 <p class="copy-hint">复制后可直接发送给客服，快速下单</p>
             </section>
 
             <!-- 客服联系方式 -->
@@ -396,7 +400,25 @@
             <p class="modal-footer-text">还没有账号？<a href="#" id="toRegisterLink">立即注册</a></p>
         </div>
     </div>
-
+        <!-- 个人中心弹窗 -->
+<div class="modal-overlay" id="profileModal" style="display: none;">
+    <div class="modal-card profile-modal">
+        <div class="modal-header">
+            <h3>👤 个人中心</h3>
+            <button class="modal-close" id="closeProfileBtn">&times;</button>
+        </div>
+        <div class="profile-content">
+            <div class="profile-section">
+                <h4>基本信息</h4>
+                <div class="profile-info" id="profileInfo">加载中...</div>
+            </div>
+            <div class="profile-section">
+                <h4>我的订单</h4>
+                <div class="order-list" id="orderList">加载中...</div>
+            </div>
+        </div>
+    </div>
+</div>
     <script src="script.js"></script>
 </body>
 </html>
